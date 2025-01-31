@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home</title>
+  </head>
+  <body>
+    <h1 style="text-align: center">Welcome to Home Page</h1>
+    <!-- <h2>Hallo <%= username %></h2> -->
+    <!-- <h2>Anda login sebagai <%= rule == 1 ? 'admin' : '?' %></h2> -->
+
+    <!-- <div>
+        <input type="text" id="name_type">
+        <button class="submit_type">ada</button>
+    </div> -->
+    <br />
+    <button class="user">tampilkan data</button>
+
+    <div id="user-list"></div>
+
+
+    <script>
+      const button = document.getElementsByClassName("user")[0];
+      // const button_type = document.getElementsByClassName('type')[0];
+
+      // button_type.addEventListener("click", () => {
+      //   fetch("/addtype")
+      //     .then((res) => res.json())
+      //     .then((data) => {
+      //       console.log(data);
+      //       const userListContainer = document.getElementById("user-list");
+      //       userListContainer.innerHTML = "";
+      //       data.forEach((user) => {
+      //         const userList = `
+      //           <ul>
+      //               <li>Username: ${user.username}</li>
+      //               <li>Rule: ${user.rule == 1 ? 'Admin' : '?'}</li>
+      //               <li>ID Company: ${user.id_company}</li>
+      //               <li>ID Store: ${user.id_store}</li>
+      //           </ul>
+      //       `;
+      //         // Append the list to the container
+      //         userListContainer.innerHTML += userList;
+      //       });
+      //     });
+      // });
+      button.addEventListener("click", () => {
+        fetch("/listuser")
+          .then((res) => res.json())
+          .then((data) => {
+            console.log(data);
+            const userListContainer = document.getElementById("user-list");
+            userListContainer.innerHTML = "";
+            data.forEach((user) => {
+              const userList = `
+                <ul>
+                    <li>Username: ${user.username}</li>
+                    <li>Rule: ${user.rule == 1 ? "Admin" : "?"}</li>
+                    <li>ID Company: ${user.id_company}</li>
+                    <li>ID Store: ${user.id_store}</li>
+                </ul>
+            `;
+              // Append the list to the container
+              userListContainer.innerHTML += userList;
+            });
+          });
+      });
+    </script>
+  </body>
+</html>
