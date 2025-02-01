@@ -723,9 +723,11 @@
             // Fetch daftar user
             const responseUser = await fetch("http://localhost:3000/listuser");
             const resultUser = await responseUser.json();
+            const responseStore = await fetch("http://localhost:3000/liststore");
+            const resultStore = await responseStore.json();
 
-            if (resultUser.find(d => d.id_company == companyId)) {
-              alert("Tidak bisa menghapus! Masih ada user yang terhubung ke company ini.");
+            if (resultUser.find(d => d.id_company == companyId) && resultStore.find(d => d.id_company == companyId)) {
+              alert("Tidak bisa menghapus! Masih ada yang terhubung ke company ini.");
               return;
             }
 

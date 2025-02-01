@@ -264,7 +264,6 @@
                     name="status"
                     aria-label="Default select example"
                   >
-                    <option selected>Pilih Status</option>
                     <option value="1">Active</option>
                     <option value="0">Inactive</option>
                   </select>
@@ -277,7 +276,11 @@
                     name="id_company"
                     id="company"
                     class="form-control"
-                  ></select>
+                  >
+                  <% dataCompany.forEach(dc => { %>
+                    <option value="<%= dc._id %>"><%= dc.name %></option>
+                  <% }) %>
+                </select>
                 </div>
               </div>
               <div class="modal-footer">
@@ -292,7 +295,6 @@
                   type="submit"
                   class="btn btn-primary"
                   id="tambah_user"
-                  name="tambah_user"
                 >
                   Kirim
                 </button>
@@ -312,7 +314,7 @@
             <th>Name</th>
             <th>Address</th>
             <th>Status</th>
-            <th>ID Company</th>
+            <th>Company</th>
             <th>Aksi</th>
           </tr>
         </thead>
@@ -323,17 +325,19 @@
             <td><%= d.name %></td>
             <td><%= d.address %></td>
             <td><%= d.status == 1 ? "Active" : "Inactive" %></td>
-            <td><%= d.id_company %></td>
+            <td>
+              <%= (dataCompany.find(dc => dc._id == d.id_company) || {}).name || "Tidak ditemukan" %>
+            </td>
             <td> 
               <div style="display:flex; gap: 3%; margin-top:-10%">
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#edit_user<%= d._id %>" data-id="${
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#edit_store<%= d._id %>" data-id="${
                     company._id
                   }">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgba(0, 0, 0, 1);"><path d="M16 2H8C4.691 2 2 4.691 2 8v13a1 1 0 0 0 1 1h13c3.309 0 6-2.691 6-6V8c0-3.309-2.691-6-6-6zM8.999 17H7v-1.999l5.53-5.522 1.999 1.999L8.999 17zm6.473-6.465-1.999-1.999 1.524-1.523 1.999 1.999-1.524 1.523z"></path></svg>
                 </button>
                 <div
                   class="modal fade"
-                  id="detail_user<%= d._id %>"
+                  id="detail_store<%= d._id %>"
                   tabindex="-1"
                   aria-labelledby="exampleModalLabel"
                   aria-hidden="true"
@@ -342,7 +346,7 @@
                     <div class="modal-content">
                       <div class="modal-header">
                         <h1 class="modal-title fs-5" id="exampleModalLabel">
-                          Detail User
+                          Detail Store
                         </h1>
                         <button
                           type="button"
@@ -401,7 +405,7 @@
                       </div>
                       <div class="modal-footer">
                         
-                        <button type="submit" class="btn btn-danger" name="hapus" onclick="deleteUser('<%= d._id %>')">
+                        <button type="submit" class="btn btn-danger" name="hapus" onclick="deleteStore('<%= d._id %>')">
                           Hapus
                         </button>
                       
@@ -416,14 +420,14 @@
                     </div>
                   </div>
                 </div>
-                <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#detail_user<%= d._id %>" data-id="${
+                <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#detail_store<%= d._id %>" data-id="${
                   company._id
                   }">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgba(0, 0, 0, 1);"><path d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8z"></path><path d="M11 11h2v6h-2zm0-4h2v2h-2z"></path></svg>
                 </button>
                 <div
                   class="modal fade"
-                  id="edit_user<%= d._id %>"
+                  id="edit_store<%= d._id %>"
                   tabindex="-1"
                   aria-labelledby="exampleModalLabel"
                   aria-hidden="true"
@@ -431,7 +435,7 @@
                   <div class="modal-dialog">
                     <div class="modal-content">
                       <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalLabel">Edit User</h1>
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Edit Store</h1>
                         <button
                           type="button"
                           class="btn-close"
@@ -441,7 +445,7 @@
                       </div>
                       <div class="modal-body">
                         <!-- <img id="foto" style="object-fit: cover; width:50%;height:50%;margin-left:25%;" alt=""> -->
-                        <form action="/edituser" method="POST">
+                        <form action="/editstore" method="POST">
                           <div class="mb-3">
                             <label for="exampleFormControlInput1" class="form-label"
                               >Name</label
@@ -471,6 +475,17 @@
                       
                           </div>
                           <div class="mb-3">
+                            <label for="status_edit" class="form-label">Status</label>
+                            <select
+                              name="status"
+                              id="status_edit"
+                              class="form-select"
+                            >
+                            <option value="1" <%= d.status == "1" ? "selected" : "" %>>Active</option>
+                            <option value="0" <%= d.status == "2" ? "selected" : "" %>>Inactive</option>
+                          </select>
+                          </div>
+                          <div class="mb-3">
                             <label for="exampleFormControlInput1" class="form-label"
                               >Company</label
                             >
@@ -484,17 +499,7 @@
                             <% }) %>
                           </select>
                           </div>
-                          <div class="mb-3">
-                            <label for="status_edit" class="form-label">Status</label>
-                            <select
-                              name="status"
-                              id="status_edit"
-                              class="form-select"
-                            >
-                            <option value="1" <%= d.status == "1" ? "selected" : "" %>>Active</option>
-                            <option value="0" <%= d.status == "2" ? "selected" : "" %>>Inactive</option>
-                          </select>
-                          </div>
+                          
                         </div>
                       <div class="modal-footer">
                         <button
@@ -506,7 +511,6 @@
                         </button>
                         <button
                           type="submit"
-                          name="submit"
                           class="btn btn-primary"
                           id="submit_edit_user"
                         >
@@ -524,171 +528,6 @@
           <% }) %>
         </tbody>
       </table>
-
-      <div
-        class="modal fade"
-        id="detail_store"
-        tabindex="-1"
-        aria-labelledby="exampleModalLabel"
-        aria-hidden="true"
-      >
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h1 class="modal-title fs-5" id="exampleModalLabel">
-                Detail Store
-              </h1>
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div class="modal-body">
-              <!-- <img id="foto" style="object-fit: cover; width:50%;height:50%;margin-left:25%;" alt=""> -->
-              <table
-                style="
-                  width: 100%;
-                  border-collapse: collapse;
-                  font-family: Arial, sans-serif;
-                "
-              >
-                <tr>
-                  <th class="col-3" style="padding: 0px 0px; text-align: left">
-                    Name:
-                  </th>
-                  <td
-                    style="padding: 0px 100px; text-align: left"
-                    id="name-detail"
-                  ></td>
-                </tr>
-                <tr>
-                  <th class="col-3" style="padding: 0px 0px; text-align: left">
-                    Address:
-                  </th>
-                  <td
-                    style="padding: 0px 100px; text-align: left"
-                    id="address-detail"
-                  ></td>
-                </tr>
-                <tr>
-                  <th class="col-3" style="padding: 0px 0px; text-align: left">
-                    Status:
-                  </th>
-                  <td
-                    style="padding: 0px 100px; text-align: left"
-                    id="status-detail"
-                  ></td>
-                </tr>
-                <tr>
-                  <th class="col-3" style="padding: 0px 0px; text-align: left">
-                    ID Company:
-                  </th>
-                  <td
-                    style="padding: 0px 100px; text-align: left"
-                    id="id_company-detail"
-                  ></td>
-                </tr>
-                <tr>
-                  <th class="col-3" style="padding: 0px 0px; text-align: left">
-                    Created at:
-                  </th>
-                  <td
-                    style="padding: 0px 100px; text-align: left"
-                    id="dibuat_detail"
-                  ></td>
-                </tr>
-              </table>
-            </div>
-            <div class="modal-footer">
-              <button
-                type="button"
-                class="btn btn-secondary"
-                data-bs-dismiss="modal"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div
-        class="modal fade"
-        id="store_edit"
-        tabindex="-1"
-        aria-labelledby="exampleModalLabel"
-        aria-hidden="true"
-      >
-        <div class="modal-dialog modal-xl">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h1 class="modal-title fs-5" id="exampleModalLabel">
-                Edit Store
-              </h1>
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <form action="/editstore" method="post">
-              <div class="modal-body">
-                <!-- <img id="foto" style="object-fit: cover; width:50%;height:50%;margin-left:25%;" alt=""> -->
-                <div class="mb-3">
-                  <label for="exampleFormControlInput1" class="form-label"
-                    >Name</label
-                  >
-                  <input
-                    type="text"
-                    class="form-control"
-                    name="name_edit"
-                    id="name_edit"
-                  />
-                  <input type="hidden" class="form-control" name="id" id="id" />
-                </div>
-                <div class="mb-3">
-                  <label for="exampleFormControlInput1" class="form-label"
-                    >Address</label
-                  >
-                  <input
-                    type="text"
-                    class="form-control"
-                    name="address_edit"
-                    id="address_edit"
-                  />
-                </div>
-                <div class="mb-3">
-                  <label for="status_edit" class="form-label">Status</label>
-                  <select
-                    name="status_edit"
-                    id="status_edit"
-                    class="form-select"
-                  ></select>
-                </div>
-              </div>
-              <div class="modal-footer">
-                <button
-                  type="button"
-                  class="btn btn-secondary"
-                  data-bs-dismiss="modal"
-                >
-                  Close
-                </button>
-                <button
-                  type="submit"
-                  class="btn btn-primary"
-                  id="submit_edit_user"
-                >
-                  Edit
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
       <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
       <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
       <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
@@ -841,5 +680,37 @@
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
       crossorigin="anonymous"
     ></script>
+    <script>
+      async function deleteStore(storeId) {
+        if (confirm("Apakah kamu yakin ingin menghapus store ini?")) {
+          try {
+            // Fetch daftar user
+            const responseUser = await fetch("http://localhost:3000/listuser");
+            const resultUser = await responseUser.json();
+
+            if (resultUser.find(d => d.id_store == storeId)) {
+              alert("Tidak bisa menghapus! Masih ada yang terhubung ke store ini.");
+              return;
+            }
+
+            const response = await fetch(`/api/store/${storeId}`, {
+              method: "DELETE",
+            });
+
+            if (!response.ok) {
+              const err = await response.json();
+              throw new Error(err.error || "Terjadi kesalahan saat menghapus");
+            }
+
+            const data = await response.json();
+            alert(data.message || "Store berhasil dihapus");
+            location.reload(); 
+          } catch (error) {
+            alert("Error: " + error.message);
+          }
+        }
+      }
+
+    </script>
   </body>
 </html>

@@ -206,7 +206,7 @@ app.delete("/api/company/:id", async (req, res) => {
   try {
     // Pastikan ID valid sebagai ObjectId
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ error: "Invalid user ID format" });
+      return res.status(400).json({ error: "Invalid company ID format" });
     }
 
     // Hapus user berdasarkan ID
@@ -349,10 +349,22 @@ app.get("/store", async (req, res) => {
   }
 });
 app.post("/store/addstore", async (req, res) => {
+  console.log(req.body);
+  const data = {
+    name: req.body.name,
+    address: req.body.address,
+    status: req.body.status,
+    id_company: req.body.id_company,
+  };
+
   try {
-    const store = new Store(req.body);
+    const store = new Store(data);
     await store.save();
-    res.status(201).send(store);
+    if (req.is("json") || req.get("Accept") === "application/json") {
+      return res.json(store);
+    } else {
+      return res.redirect("/store");
+    }
   } catch (error) {
     res.status(400).send(error);
   }
@@ -364,6 +376,49 @@ app.get("/liststore", async (req, res) => {
     res.status(200).send(store);
   } catch (error) {
     res.status(500).send(error);
+  }
+});
+
+app.post("/editstore", async (req, res) => {
+  const id = req.body.id;
+
+  try {
+    const store = await Store.findByIdAndUpdate(id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    if (!store) {
+      return res.status(404).send();
+    }
+    if (req.is("json") || req.get("Accept") === "application/json") {
+      return res.json(store);
+    } else {
+      return res.redirect("/store");
+    }
+    // res.status(200).json(company);
+  } catch (error) {
+    res.status(400).send(error);
+  }
+});
+
+app.delete("/api/store/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Pastikan ID valid sebagai ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "Invalid store ID format" });
+    }
+
+    // Hapus user berdasarkan ID
+    const ds = await Store.deleteOne({ _id: id });
+
+    if (!ds) {
+      return res.status(404).json({ error: id });
+    }
+    res.status(200).json(ds);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 
