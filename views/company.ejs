@@ -282,7 +282,6 @@
                     name="status"
                     aria-label="Default select example"
                   >
-                    <option selected>Pilih Status</option>
                     <option value="1">Active</option>
                     <option value="0">Inactive</option>
                   </select>
@@ -362,7 +361,9 @@
             <td><%= d.name %></td>
             <td><%= d.store_name %></td>
             <td><%= d.address %></td>
-            <td><%= d.id_type %></td>
+            <td>
+              <%= (dataType.find(dt => dt._id == d.id_type) || {}).type || "Tidak ditemukan" %>
+            </td>
             <td><%= d.status == 1 ? "Active" : "Inactive" %></td>
             <td><%= d.phone %></td>
             <td><%= d.email %></td>
@@ -417,18 +418,18 @@
                             ><%= d.store_name %></td>
                           </tr>
                           <tr>
-                            <th style="padding: 0px 0px; text-align: left">Company:</th>
+                            <th style="padding: 0px 0px; text-align: left">Address:</th>
                             <td
                               style="padding: 0px 100px; text-align: left"
                               id="company_detail"
-                            ><%= d.id_company %></td>
+                            ><%= d.address %></td>
                           </tr>
                           <tr>
-                            <th style="padding: 0px 0px; text-align: left">Store:</th>
+                            <th style="padding: 0px 0px; text-align: left">Type:</th>
                             <td
                               style="padding: 0px 100px; text-align: left"
                               id="store_detail"
-                            ><%= d.id_store %></td>
+                            ><%= d.id_type %></td>
                           </tr>
                           <tr>
                             <th style="padding: 0px 0px; text-align: left">Status:</th>
@@ -436,6 +437,20 @@
                               style="padding: 0px 100px; text-align: left"
                               id="status_detail"
                             ><%= d.status %></td>
+                          </tr>
+                          <tr>
+                            <th style="padding: 0px 0px; text-align: left">Phone:</th>
+                            <td
+                              style="padding: 0px 100px; text-align: left"
+                              id="status_detail"
+                            ><%= d.phone %></td>
+                          </tr>
+                          <tr>
+                            <th style="padding: 0px 0px; text-align: left">Email:</th>
+                            <td
+                              style="padding: 0px 100px; text-align: left"
+                              id="status_detail"
+                            ><%= d.email %></td>
                           </tr>
                           <tr>
                             <th style="padding: 0px 0px; text-align: left">
@@ -450,7 +465,7 @@
                       </div>
                       <div class="modal-footer">
                         
-                        <button type="submit" class="btn btn-danger" name="hapus" onclick="deleteUser('<%= d._id %>')">
+                        <button type="submit" class="btn btn-danger" name="hapus" onclick="deleteCompany('<%= d._id %>')">
                           Hapus
                         </button>
                       
@@ -490,7 +505,7 @@
                       </div>
                       <div class="modal-body">
                         <!-- <img id="foto" style="object-fit: cover; width:50%;height:50%;margin-left:25%;" alt=""> -->
-                        <form action="/edituser" method="POST">
+                        <form action="/editcompany" method="POST">
                           <div class="mb-3">
                             <label for="exampleFormControlInput1" class="form-label"
                               >Name</label
@@ -507,23 +522,39 @@
                           </div>
                           <div class="mb-3">
                             <label for="exampleFormControlInput1" class="form-label"
-                              >Rule</label
+                              >Store Name</label
                             >
-                            <select
-                              name="rule"
-                              id="rule_edit"
-                              class="form-select"
+                            <input
+                            type="text"
+                            class="form-control"
+                            id="store_name"
+                            name="store_name"
+                            value="<%= d.store_name %>"
+                            id="exampleFormControlInput1"
+                            placeholder="store name..."
+                            required
+                          />
+                          <div class="mb-3">
+                            <label for="exampleFormControlInput1" class="form-label"
+                              >Address</label
                             >
-                            <option value="1" <%= d.rule == "1" ? "selected" : "" %>>admin</option>
-                            <option value="2" <%= d.rule == "2" ? "selected" : "" %>>petugas</option>
-                          </select>
+                            <input
+                            type="text"
+                            class="form-control"
+                            id="store_name"
+                            name="address"
+                            value="<%= d.address %>"
+                            id="exampleFormControlInput1"
+                            placeholder="adress..."
+                            required
+                          />
                           </div>
                           <div class="mb-3">
                             <label for="exampleFormControlInput1" class="form-label"
-                              >Company</label
+                              >id_type</label
                             >
                             <select
-                              name="id_company"
+                              name="id_type"
                               id="company_edit"
                               class="form-select"
                             >
@@ -543,6 +574,35 @@
                             <option value="0" <%= d.status == "0" ? "selected" : "" %>>inactive</option>
                           </select>
                           </div>
+                          <div class="mb-3">
+                            <label for="exampleFormControlInput1" class="form-label"
+                              >Phone</label
+                            >
+                            <input
+                            type="text"
+                            class="form-control"
+                            id="store_name"
+                            name="phone"
+                            value="<%= d.phone %>"
+                            id="exampleFormControlInput1"
+                            placeholder="phone..."
+                            required
+                          />
+                        </div>
+                          <div class="mb-3">
+                            <label for="exampleFormControlInput1" class="form-label"
+                              >Email</label
+                            >
+                            <input
+                            type="text"
+                            class="form-control"
+                            value="<%= d.email %>"
+                            id="store_name"
+                            name="email"
+                            id="exampleFormControlInput1"
+                            placeholder="email..."
+                            required
+                          />
                         </div>
                       <div class="modal-footer">
                         <button
@@ -554,7 +614,6 @@
                         </button>
                         <button
                           type="submit"
-                          name="submit"
                           class="btn btn-primary"
                           id="submit_edit_user"
                         >
@@ -658,24 +717,38 @@
       crossorigin="anonymous"
     ></script>
     <script>
-  function deleteUser(userId) {
-  if (confirm("Apakah kamu yakin ingin menghapus user ini?")) {
-    fetch(`/api/users/${userId}`, {
-      method: "DELETE",
-    })
-    .then(response => {
-      if (!response.ok) {
-        return response.json().then(err => { throw new Error(err.error || "Terjadi kesalahan"); });
+      async function deleteCompany(companyId) {
+        if (confirm("Apakah kamu yakin ingin menghapus company ini?")) {
+          try {
+            // Fetch daftar user
+            const responseUser = await fetch("http://localhost:3000/listuser");
+            const resultUser = await responseUser.json();
+            const responseStore = await fetch("http://localhost:3000/liststore");
+            const resultStore = await responseStore.json();
+
+            if (resultUser.find(d => d.id_company == companyId) && resultStore.find(d => d.id_company == companyId)) {
+              alert("Tidak bisa menghapus! Masih ada yang terhubung ke company ini.");
+              return;
+            }
+
+            const response = await fetch(`/api/company/${companyId}`, {
+              method: "DELETE",
+            });
+
+            if (!response.ok) {
+              const err = await response.json();
+              throw new Error(err.error || "Terjadi kesalahan saat menghapus");
+            }
+
+            const data = await response.json();
+            alert(data.message || "Company berhasil dihapus");
+            location.reload(); 
+          } catch (error) {
+            alert("Error: " + error.message);
+          }
+        }
       }
-      return response.json();
-    })
-    .then(data => {
-      alert(data.message || "User berhasil dihapus");
-      location.reload(); // Refresh halaman agar perubahan terlihat
-    })
-    .catch(error => alert("Error: " + error.message));
-  }
-}
+
     </script>
   </body>
 </html>

@@ -8,6 +8,7 @@ const Type = require("./models/type");
 const Company = require("./models/company");
 const Store = require("./models/store");
 const mongoose = require("mongoose");
+const company = require("./models/company");
 
 const app = express();
 // convert data into json format
@@ -199,6 +200,27 @@ app.delete("/api/users/:id", async (req, res) => {
   }
 });
 
+app.delete("/api/company/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Pastikan ID valid sebagai ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "Invalid company ID format" });
+    }
+
+    // Hapus user berdasarkan ID
+    const dc = await company.deleteOne({ _id: id });
+
+    if (!dc) {
+      return res.status(404).json({ error: id });
+    }
+    res.status(200).json(dc);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.get("/company", async (req, res) => {
   try {
     const response = await fetch("http://localhost:3000/listcompany");
@@ -212,7 +234,7 @@ app.get("/company", async (req, res) => {
 });
 
 app.post("/editcompany", async (req, res) => {
-  const id = req.body.id[0];
+  const id = req.body.id;
 
   try {
     const company = await Company.findByIdAndUpdate(id, req.body, {
@@ -222,8 +244,12 @@ app.post("/editcompany", async (req, res) => {
     if (!company) {
       return res.status(404).send();
     }
-    res.redirect("/coba/company");
-    res.status(200).json(company);
+    if (req.is("json") || req.get("Accept") === "application/json") {
+      return res.json(company);
+    } else {
+      return res.redirect("/company");
+    }
+    // res.status(200).json(company);
   } catch (error) {
     res.status(400).send(error);
   }
@@ -283,7 +309,7 @@ app.post("/company/addcompany", async (req, res) => {
     name: req.body.name,
     store_name: req.body.store_name,
     address: req.body.address,
-    id_type: req.body.type ? req.body.type : req.body.id_type,
+    id_type: req.body.id_type,
     status: req.body.status,
     phone: req.body.phone,
     email: req.body.email,
@@ -292,8 +318,11 @@ app.post("/company/addcompany", async (req, res) => {
   try {
     const company = new Company(data);
     await company.save();
-    res.redirect("/coba/company");
-    res.status(201).send(company);
+    if (req.is("json") || req.get("Accept") === "application/json") {
+      return res.json(company);
+    } else {
+      return res.redirect("/company");
+    }
   } catch (error) {
     res.status(400).send(error);
   }
@@ -320,10 +349,22 @@ app.get("/store", async (req, res) => {
   }
 });
 app.post("/store/addstore", async (req, res) => {
+  console.log(req.body);
+  const data = {
+    name: req.body.name,
+    address: req.body.address,
+    status: req.body.status,
+    id_company: req.body.id_company,
+  };
+
   try {
-    const store = new Store(req.body);
+    const store = new Store(data);
     await store.save();
-    res.status(201).send(store);
+    if (req.is("json") || req.get("Accept") === "application/json") {
+      return res.json(store);
+    } else {
+      return res.redirect("/store");
+    }
   } catch (error) {
     res.status(400).send(error);
   }
@@ -335,6 +376,49 @@ app.get("/liststore", async (req, res) => {
     res.status(200).send(store);
   } catch (error) {
     res.status(500).send(error);
+  }
+});
+
+app.post("/editstore", async (req, res) => {
+  const id = req.body.id;
+
+  try {
+    const store = await Store.findByIdAndUpdate(id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    if (!store) {
+      return res.status(404).send();
+    }
+    if (req.is("json") || req.get("Accept") === "application/json") {
+      return res.json(store);
+    } else {
+      return res.redirect("/store");
+    }
+    // res.status(200).json(company);
+  } catch (error) {
+    res.status(400).send(error);
+  }
+});
+
+app.delete("/api/store/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Pastikan ID valid sebagai ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "Invalid store ID format" });
+    }
+
+    // Hapus user berdasarkan ID
+    const ds = await Store.deleteOne({ _id: id });
+
+    if (!ds) {
+      return res.status(404).json({ error: id });
+    }
+    res.status(200).json(ds);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 
